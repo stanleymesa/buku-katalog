@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1056444861614",
+    "project_id": "handyboocue",
+    "storage_bucket": "handyboocue.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056444861614:android:0924e09b155b82b9bff13f",
+        "android_client_info": {
+          "package_name": "com.example.handyboocue"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056444861614-65d5vjf8la826ktk5v6ctegvt0ar4odv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfoABZ2XXEQLYAXtYZAH5p1Pm1rOgEpCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056444861614-65d5vjf8la826ktk5v6ctegvt0ar4odv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

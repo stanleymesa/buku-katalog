@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">HandyBoocue</string>
+    <string name="handy_boocue">Handy Boocue</string>
+    <string name="cari_buku">Cari Buku</string>
+    <string name="input_buku">Input Buku</string>
+    <string name="judul">Judul</string>
+    <string name="penulis">Penulis</string>
+    <string name="genre">Genre</string>
+    <string name="deskripsi">Deskripsi</string>
+    <string name="pilih_gambar">Pilih Gambar</string>
+    <string name="edit_data">Edit Data</string>
+    <string name="save_data">Save Data</string>
+</resources>
