@@ -10,7 +10,7 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import com.example.handyboocue.R
-import com.example.handyboocue.dummyuser.DummyUser
+import com.example.handyboocue.statics.DummyUser
 import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {

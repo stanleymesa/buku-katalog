@@ -1,4 +1,4 @@
-package com.example.handyboocue.dummyuser
+package com.example.handyboocue.statics
 
 object DummyUser {
     const val EMAIL = "dummy@gmail.com"
