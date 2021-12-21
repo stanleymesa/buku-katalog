@@ -23,6 +23,7 @@
             app:cardCornerRadius="16dp">
 
             <ImageView
+                android:id="@+id/iv_buku_row"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
@@ -37,6 +38,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_judul_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="Judul Buku"
@@ -46,6 +48,7 @@
                 android:fontFamily="@font/poppins_bold"/>
 
             <TextView
+                android:id="@+id/tv_desc_row"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:text="Ini adalah buku saya pertama kali"

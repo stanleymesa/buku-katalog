@@ -1,18 +1,17 @@
 package com.example.handyboocue.activities
 
 import android.content.ContentResolver
-import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.renderscript.ScriptGroup
+import android.provider.MediaStore
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.handyboocue.R
@@ -23,9 +22,9 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.net.URI
+import java.io.ByteArrayOutputStream
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClickListener {
 
@@ -34,6 +33,7 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
     private lateinit var tiGenre: TextInputLayout
     private lateinit var tiDesc: TextInputLayout
     private lateinit var ivBuku: ImageView
+    private lateinit var ivBack: ImageView
     private lateinit var btnSave: MaterialButton
     private lateinit var btnPilihGambar: MaterialButton
     private lateinit var progressBar: ProgressBar
@@ -59,9 +59,11 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
         tiGenre = findViewById(R.id.ti_genre_input)
         tiDesc = findViewById(R.id.ti_deskripsi_input)
         ivBuku = findViewById(R.id.iv_buku_input)
+        ivBack = findViewById(R.id.iv_back)
         btnSave = findViewById(R.id.btn_save)
         btnPilihGambar = findViewById(R.id.btn_pilih_gambar_input)
         progressBar = findViewById(R.id.progress_bar)
+
 
         // Set Firebase
         firestoreRoot = FirebaseFirestore.getInstance()
@@ -70,9 +72,11 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
         // On Click
         btnSave.setOnClickListener(this)
         btnPilihGambar.setOnClickListener(this)
+        ivBack.setOnClickListener(this)
         ivBuku.setOnLongClickListener(this)
 
     }
+
 
     private fun validateJudul() {
         if (tiJudul.editText!!.text.trim().isEmpty()) {
@@ -128,10 +132,23 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
         startActivityForResult(intent, StaticData.PICK_IMAGE_REQUEST)
     }
 
+    private fun getImageSize(image: Uri): Long {
+        val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, image)
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val imageInByte: ByteArray = stream.toByteArray()
+        val lengthbmp = imageInByte.size.toLong()
+        return lengthbmp
+    }
+
     @Override
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == StaticData.PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
+            if (getImageSize(data.data!!) > 1000000) {
+                Toast.makeText(this, "Gambar melebihi 1 MB!", Toast.LENGTH_SHORT).show()
+                return
+            }
             uriBuku = data.data!!
             Glide.with(this).load(uriBuku).into(ivBuku)
         }
@@ -154,13 +171,21 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
         return slug
     }
 
+    private fun refreshState(pb: Boolean, buttons: Boolean) {
+        progressBar.isVisible = pb
+        btnSave.isEnabled = buttons
+        btnPilihGambar.isEnabled = buttons
+    }
+
+
     private fun saveData() {
         if (allValidation()) {
-            progressBar.isVisible = true
+            refreshState(pb = true, buttons = false)
             val id = UUID.randomUUID().toString()
 
             // Jika Gambar Tidak Kosong
             if (uriBuku != null) {
+
                 val gambar = "${System.currentTimeMillis()}.${getExtension(uriBuku!!)}"
                 val bukuModel = BukuModel(
                     id = id,
@@ -176,20 +201,21 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
                 storageRoot.child(gambar).putFile(uriBuku!!)
                     .addOnSuccessListener {
 
+                        // Simpan data ke Firestore
                         firestoreRoot.document("buku/$id").set(bukuModel)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Input Data Berhasil!", Toast.LENGTH_SHORT).show()
-                                progressBar.isVisible = false
+                                refreshState(pb = false, buttons = true)
                             }
                             .addOnFailureListener {
                                 Toast.makeText(this, "Input Data Gagal!", Toast.LENGTH_SHORT).show()
-                                progressBar.isVisible = false
+                                refreshState(pb = false, buttons = true)
                             }
 
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "Storage gagal!", Toast.LENGTH_SHORT).show()
-                        progressBar.isVisible = false
+                        refreshState(pb = false, buttons = true)
                     }
 
             }
@@ -203,14 +229,15 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
                     deskripsi = desc,
                     slug = getSlug(judul)
                 )
+                // Hanya simpan data ke Firestore
                 firestoreRoot.document("buku/$id").set(bukuModel)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Input Data Berhasil!", Toast.LENGTH_SHORT).show()
-                        progressBar.isVisible = false
+                        refreshState(pb = false, buttons = true)
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "Input Data Gagal!", Toast.LENGTH_SHORT).show()
-                        progressBar.isVisible = false
+                        refreshState(pb = false, buttons = true)
                     }
             }
 
@@ -225,6 +252,10 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
 
             R.id.btn_pilih_gambar_input -> {
                 openFileChooser()
+            }
+
+            R.id.iv_back -> {
+                finish()
             }
         }
     }
@@ -246,6 +277,11 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
             }
         }
         return false
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 
 }
