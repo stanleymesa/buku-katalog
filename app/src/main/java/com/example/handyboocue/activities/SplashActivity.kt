@@ -46,7 +46,6 @@ class SplashActivity : AppCompatActivity() {
             mAuth.signInWithEmailAndPassword(DummyUser.EMAIL, DummyUser.PASSWORD)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        Toast.makeText(this, "Berhasil Register", Toast.LENGTH_SHORT).show()
                         runnable = Runnable {
                             startActivity(Intent(this, MainActivity::class.java))
                             finish()

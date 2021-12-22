@@ -227,6 +227,7 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
                     penulis = penulis,
                     genre = genre,
                     deskripsi = desc,
+                    gambar = "",
                     slug = getSlug(judul)
                 )
                 // Hanya simpan data ke Firestore
@@ -248,6 +249,7 @@ class InputActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClic
         when (v?.id) {
             R.id.btn_save -> {
                 saveData()
+                finish()
             }
 
             R.id.btn_pilih_gambar_input -> {
